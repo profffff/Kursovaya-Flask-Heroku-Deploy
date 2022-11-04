@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Add list</h1>
+  <form method="post">
+<!--    <input type="text" name="list_id" id="list_id" class="form-control" placeholder="list_id" onmouseover="if (style.left <= `${1000}px`)-->
+<!--                                                                                                               style.left = 100 + 'px';-->
+<!--                                                                                                            else style.left = 0 + 'px';">><br>-->
+     <input type='text' name="name_list" id="intro" class="form-control" placeholder="name_list"><br>
+<!--    <input name="intro" id="text" class="form-control" placeholder="vvedite to-to"><br>-->
+    <input type="submit" class="btn btn-sucess" value="Create list"><br>
+
+  </form>
+</div>
+
+{% endblock %}

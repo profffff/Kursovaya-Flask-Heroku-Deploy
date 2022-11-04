@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+<div style="text-align:center">
+    <h2>Type word</h2>
+    <h5 >Attempts remaining: {{attempt}}</h5>
+    <div >
+        <table>
+            <ul>
+                <tr>
+                    <p>
+                <i style="font-size: 250%" >Translation: {{word[1]}}</i>
+                    </p>
+                    <form method="post">
+
+                <div class="form-group">
+       <div class="cols-sm-10">
+        <div class="input-group">
+
+         <input type="text" class="form-control" name="word" placeholder="" id="word" required />
+        </div>
+       </div>
+      </div>
+                    </form>
+                </ul>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

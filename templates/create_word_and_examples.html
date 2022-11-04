@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <h1>New word</h1>
+  <form method="post">
+      <input type='text' name="word_name" id="word_name" class="form-control" placeholder="word"><br>
+      <input type='text' name="word_translation" id="word_translation" class="form-control" placeholder="translation"><br>
+       {% if message %}
+          <div class="alert alert-success">{{message}}</div>
+     {% endif %}
+      <div class="input-wrapper">
+      <a href="javascript:void(0);" class="add-input" title="Add input"><img src="/static/img/add.png" width="20"
+     height="20" style="vertical-align:middle;margin: 0px 5px" />Add use case</a>
+          </div>
+
+    <br><input type="submit" class="btn btn-sucess" value="Create word"><br>
+
+    </form>
+</div>
+
+
+<script>
+$(document).ready(function(){
+    var max_input_fields = 10;
+    var add_input = $('.add-input');
+    var input_wrapper = $('.input-wrapper');
+    var new_input = '<div><br><input type="text" name="caseex[]" placeholder="use case example" class="form-control"/><a href="javascript:void(0);" ' +
+        'class="remove-input" title="Remove input"></a></br><input type="text" name="caseextrans[]" placeholder="use case translation" class="form-control"/><a href="javascript:void(0);" ' +
+        'class="remove-input" title="Remove input"><img src="/static/img/remove.png" style="vertical-align:top; margin: -70px -50px" width="30" height="30" /></a></div>';
+
+    var add_input_count = 1;
+    $(add_input).click(function(){
+        if(add_input_count < max_input_fields){
+            add_input_count++;
+            $(input_wrapper).append(new_input);
+        }
+    });
+    $(input_wrapper).on('click', '.remove-input', function(e){
+        e.preventDefault();
+        $(this).parent('div').remove();
+        add_input_count--;
+    });
+});
+</script>
+</body>
+
+
+{% endblock %}

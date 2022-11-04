@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+  
+{% block title %}User list{% endblock %}
+
+
+{% block content %}
+<h1>Your lists</h1>
+<div>
+    <a class="btn btn-dark" href="{{ url_for('create_list') }}">Create new list!</a>
+    <p></p>
+    <p>Your lists that you created:</p>
+    <table>
+        {% if account %}
+        <ul>
+        {% for list in account %}
+            <tr>
+          <li>
+              {% if list['is_public'] %}
+              <a style="border: 4mm ridge rgba(255, 220, 150, .6); padding: 8px 60px" href="{{ url_for('otheruserwords', id=list['id_list']) }}" class="btn btn-light ">{{ list['name_list'] }}</a>
+              <p></p>
+              <button style="background-color: #C14545;  margin: 0px 0px" type="button" onclick="window.location.href='{{ url_for('deletelist', id=list['id_list']) }}';
+              this.disabled=true;  " name='deletelist' class="btn btn-success"  >Delete</button>
+               <a style="margin: 0px 0px">Public list</a>
+                    {% else %}
+              <a style="border: 4mm ridge rgba(211, 220, 250, .6); padding: 8px 60px" href= "{{ url_for('userwords', id=list['id_list']) }}" class="btn btn-light ">{{ list['name_list'] }}</a>
+              <p></p>
+              <button style="background-color: #65B264; margin: 0px 0px" type="button" onclick="window.location.href='{{ url_for('renamelist', id=list['id_list']) }}';
+              this.disabled=true;  " name='renamelist' class="btn btn-primary"  >Rename</button>
+              <button style="background-color: #C14545; margin: 0px 0px" type="button" onclick="window.location.href='{{ url_for('deletelist', id=list['id_list']) }}';
+              this.disabled=true;  " name='deletelist' class="btn btn-success"  >Delete</button>
+              <button style="background-color: #6F64B2; margin: 0px 0px" type="button" onclick="window.location.href='{{ url_for('makelistpublic', id=list['id_list']) }}';
+              this.disabled=true;  " name='makepubliclist' class="btn btn-primary"  >Make public</button>
+                    {% endif %}
+              </p>
+          </li>
+            </tr>
+        {% endfor %}
+        </ul>
+      {% endif %}
+
+
+    </table>
+</div>
+
+
+<div>
+    <p>Your lists that other users created:</p>
+    <table>
+        {% if added_lists %}
+        <ul>
+        {% for list in added_lists %}
+            <tr>
+          <li>
+       <a style="border: 4mm ridge rgba(255, 220, 150, .6); padding: 8px 60px"  href="{{ url_for('otheruserwords', id=list['id_list']) }}" class="btn btn-light ">{{ list['name_list'] }}</a>
+          </li>
+                <p></p>
+                <button style="background-color: #C14545; margin: 0px 0px" type="button" onclick="window.location.href='{{ url_for('deletelist', id=list['id_list']) }}';
+              this.disabled=true;  " name='deletelist' class="btn btn-success"  >Delete</button>
+            </tr>
+        {% endfor %}
+        </ul>
+      {% endif %}
+
+
+    </table>
+</div>
+{% endblock %}
+
+

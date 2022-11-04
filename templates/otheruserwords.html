@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<p>You can't edit this list</p>
+<h1>Your  words</h1>
+<div>
+    <p>Your words are below:</p>
+    <table>
+        {% if account %}
+        <ul>
+        {% for list in account %}
+            <tr>
+          <li>
+              <a href="{{ url_for('userexamples', id=list['word_id']) }}" class="btn btn-light ">Word: {{ list['word_name'] }}</a></p>
+              <p></p>
+              <a>Translation: {{ list['word_translation'] }}</a>
+              <p></p>
+          </li>
+            </tr>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    </table>
+</div>
+
+
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stars_rating.css') }}">
+    <h1>Rate list:</h1>
+    <form method="post">
+    <a class="rate-area">
+	<input type="radio" id="5-star" name="rating" value="5" onclick=" viewDetails()"  /><label for="5-star" title="Amazing">5 stars</label>
+	<input type="radio" id="4-star" name="rating" value="4" onclick= " viewDetails()" /><label for="4-star" title="Good">4 stars</label>
+	<input type="radio" id="3-star" name="rating" value="3" onclick= " viewDetails()" /><label for="3-star" title="Average">3 stars</label>
+	<input type="radio" id="2-star" name="rating" value="2" onclick= " viewDetails()" /><label for="2-star" title="Not Good">2 stars</label>
+	<input type="radio" id="1-star" name="rating" value="1" onclick= " viewDetails()" /><label for="1-star" title="Bad">1 star</label>
+    </a>
+        <input style="vertical-align:center;margin: 4px 8px" type="submit" name="rating" class="btn btn-success" value="Submit"/>
+
+    </form>
+
+<div>
+ <button style="position: absolute; margin: -40px 450px; "onclick="scrolltop()" id="myBtn" title="Go to top">^Top^</button>
+</div>
+
+<script>
+    function scrolltop() {
+        window.scroll({top: 0, left: 0, behavior: 'smooth'});
+    }
+</script>
+
+<script>
+    function viewDetails() {
+        window.scrollTo({top: document.body.scrollHeight, behavior: 'instant'});
+}
+</script>
+
+
+
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div>
+  <form method="post">
+      <a href="{{ url_for('createwordandexamples') }}" class="btn btn-dark ">CREATE NEW WORD</a>
+       <a href="{{ url_for('download') }}" class="btn btn-dark ">UPLOAD FROM FILE</a>
+  </form>
+</div>
+
+
+<h1>Your  words</h1>
+<div>
+    <p>Your words are below:</p>
+    <table>
+        {% if account %}
+        <ul>
+        {% for list in account %}
+            <tr>
+          <li>
+              <a href="{{ url_for('userexamples', id=list['word_id']) }}" class="btn btn-light ">Word: {{ list['word_name'] }}</a></p>
+              <p></p>
+              <a>Translation: {{ list['word_translation'] }}</a>
+              <p></p>
+          </li>
+            </tr>
+            <button style="margin: 0px 0px" type="button" onclick="window.location.href='{{ url_for('editword', id=list['word_id']) }}';" name='renamelist' class="btn btn-primary"  >Edit</button>
+              <button style="margin: 0px 10px" type="button" onclick="window.location.href='{{ url_for('deleteword', id=list['word_id']) }}';
+              this.disabled=true;  " name='deletelist' class="btn btn-primary"  >Delete</button>
+            <p></p>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    </table>
+</div>
+
+<div>
+ <button style="position: absolute; margin: -40px 450px; "onclick="scrolltop()" id="myBtn" title="Go to top">^Top^</button>
+</div>
+
+<script>
+    function scrolltop() {
+        window.scroll({top: 0, left: 0, behavior: 'smooth'});
+    }
+</script>
+
+{% endblock %}

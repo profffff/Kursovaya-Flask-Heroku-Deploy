@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+<div style="text-align:center">
+<h2>Repetition ({{remain}})</h2>
+<h5 >Attempts remaining: {{attempt}}</h5>
+    <table>
+        <ul>
+            <tr>
+                <form method="post">
+                <input type="submit" name="not" class="btn btn-success" value="Don't remember"/>
+                </form>
+                <p>   <i style="font-size: 250%">Word translation: {{word}}</i></p>
+                <div class="input-group">
+                    <form method="post">
+                 <input type="text" class="form-control" name="answer" placeholder="type word" id="answer"  />
+                    </form>
+                </div>
+                <p></p>
+            {% for ex in word_ex %}
+            <li>
+             <a style="vertical-align:center;margin: 0px 0px">Translation: {{ex[1]}}</a>
+                </li>
+            {% endfor %}
+            </ul>
+
+
+
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+  
+{% block title %}Home{% endblock %}
+  
+{% block content %}
+
+
+<a href="{{ url_for('kursovaya_win')}}" class="btn btn-light ">Secret button</a>
+
+<div style="text-align: center">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/waving_animation_home.css') }}">
+<h1 style="color:gray;font-size:80px;margin: 200px 100px">
+  <p>
+<span class="wave">HOLA, {{ username }}!</span>
+  </p>
+</h1>
+</div>
+{% endblock %}

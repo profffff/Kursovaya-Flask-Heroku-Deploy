@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+<div style="text-align:center">
+<h2>Memorize word</h2>
+    <table>
+        <ul>
+            <tr>
+                <form method="post">
+                    {% if index_word == 0 %}
+                    <input style="margin: 0px 8px" type="submit" class="btn btn-success" value="Back" disabled/>
+                    {% else %}
+                    <input style="margin: 0px 8px" type="submit" name="previousword" class="btn btn-success" value="Back"/>
+                    {% endif %}
+                    <input style="margin: 0px 8px" type="submit" name="nextword" class="btn btn-success" value="Next"/>
+                    </form>
+                <p> </p>
+            <p>    <a >Stage: {{word[0]}}</a></p>
+          <p>  <a >Word: {{word[3]}}</a></p>
+           <p>   <a>Word translation: {{word[4]}}</a></p>
+
+            {% for ex in word_ex %}
+            <p>    <a style="margin: -0px 0px">{{loop.index}}. Use case: {{ex[0]}}</a></p>
+            <p>    <a style="margin: -0px 0px">{{loop.index}}. Translation: {{ex[1]}}</a></p>
+            {% endfor %}
+            </ul>
+
+
+
+    </table>
+</div>
+
+{% endblock %}

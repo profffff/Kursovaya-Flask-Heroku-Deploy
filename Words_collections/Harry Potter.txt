@@ -1,0 +1,215 @@
+Transfiguration spell
+RU 
+Заклинание преображения
+EN 
+School of Witchcraft and Wizardry
+RU 
+Школа колдовства и волшебства
+EN 
+Wand
+RU 
+Палочка
+EN 
+Coward
+RU 
+Трусливый
+EN 
+Dungeon
+RU 
+Темница
+EN 
+Fire-Eater
+RU 
+Пожиратель Огня
+EN 
+Graveyard
+RU 
+Кладбище
+EN 
+Potter
+RU 
+Гончар
+EN 
+He Who Must Not Be Named
+RU 
+Тот, Кого Нельзя Называть
+EN 
+Ghost
+RU 
+Призрак
+EN 
+Leprechaun
+RU 
+Гном
+EN 
+Merpeople
+RU 
+Русалки
+EN 
+Phoenix
+RU 
+Феникс
+EN 
+Dragon
+RU 
+Дракон
+EN 
+Basilisk
+RU 
+Василиск
+EN 
+Centaur
+RU 
+Кентавр
+EN 
+Unicorn
+RU 
+Единорог
+EN 
+Werewolf
+RU 
+Оборотень
+EN 
+Hippogriff
+RU 
+Гиппогриф
+EN 
+Goblin
+RU 
+Гоблин
+EN 
+House elf
+RU 
+Домашний эльф
+EN 
+Divination
+RU 
+Гадание
+EN 
+Study of Ancient Runes
+RU 
+Изучение древних рун
+EN 
+Arithmancy
+RU 
+Нумерология
+EN 
+Astronomy
+RU 
+Астрономия
+EN 
+History of Magic
+RU 
+История магии
+EN 
+Caretaker
+RU 
+Смотритель
+EN 
+Gamekeeper
+RU 
+Егерь
+EN 
+Headmaster
+RU 
+Директор школы
+EN 
+Spell-book
+RU 
+Книга заклинаний
+EN 
+Cloak of invisibility
+RU 
+Плащ-невидимка
+EN 
+Cauldron
+RU 
+Котел
+EN 
+Common room
+RU 
+Общая комната
+EN 
+Dormitory
+RU 
+Общежитие
+EN 
+Curse
+RU 
+Проклинать
+EN 
+He is bewitched
+RU 
+Он околдован
+EN 
+Antidote
+RU 
+Противоядие
+EN 
+Venom
+RU 
+Яд
+EN 
+Prophecy
+RU 
+Пророчество
+EN 
+Broomstick
+RU 
+Метла
+EN 
+Jinx
+RU 
+Сглаз
+EN 
+Spell
+RU 
+Заклинание
+EN 
+Muggle
+RU 
+Маггл
+EN 
+Exasperated
+RU 
+Раздраженный
+EN 
+To hiss
+RU 
+Шипеть
+EN 
+To falter
+RU 
+Запинаться
+EN 
+Rummage
+RU 
+Искать
+EN 
+To quiver
+RU 
+Дрожать
+EN 
+Emerald
+RU 
+Изумруд
+EN 
+Weirdo
+RU 
+Чудак
+EN 
+Good-for-nothing
+RU 
+Ни на что не годный
+EN 
+Five points to Gryffindor
+RU 
+Пять очков Гриффиндору
+EN 
+Wizard
+RU 
+Волшебник
+EN 
+Dark Arts
+RU 
+Черная магия

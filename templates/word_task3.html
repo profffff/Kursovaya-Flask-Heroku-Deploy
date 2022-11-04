@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+<div>
+    <div style="text-align:center">
+    <h2>Match the words with the translation</h2>
+    <h3 >Attempts remaining: {{attempt}}</h3>
+        </div>
+    <div >
+        <table>
+            <ul>
+                     <p><form method="post"> </p>
+            {% for word in words %}
+                <div style="text-align:center; margin-right: 100px">
+        <p><input type="submit" class="btn btn-dark" name="{{loop.index0+5}}" value="{{word[0]}}" /></p>
+                </div>
+                <div style="text-align:center; margin-right: -50px">
+        <p><input style="text-align:center; " name="{{ind[loop.index0]}}" type="submit" class="btn btn-dark" value="{{ words[ind[loop.index0]][1] }}"/></p>
+                 </div>
+            {% endfor  %}
+                    </form>
+                </ul>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

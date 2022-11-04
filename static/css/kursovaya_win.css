@@ -1,0 +1,114 @@
+@font-face {
+font-family: "Agenda Bold";
+src: url("https://www.tiaa.org/public/fonts/285ba495-2172-479d-86ad-c20c8ee7ff3b-2.eot");
+src: url("https://www.tiaa.org/public/fonts/285ba495-2172-479d-86ad-c20c8ee7ff3b-2.eot?") format("embedded-opentype"), url("https://www.tiaa.org/public/fonts/285ba495-2172-479d-86ad-c20c8ee7ff3b-3.woff") format("woff"), url("https://www.tiaa.org/public/fonts/285ba495-2172-479d-86ad-c20c8ee7ff3b-1.ttf") format("truetype"), url("https://www.tiaa.org/public/fonts/285ba495-2172-479d-86ad-c20c8ee7ff3b-4.svg") format("svg");
+font-weight: 900;
+font-style: normal;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700');
+
+
+body {
+  background-color: #00c3ff;
+}
+
+.main{
+
+  z-index:5;
+}
+
+h1 {
+ position: relative;
+ text-align: center;
+ font-size: 48px;
+ font-family: Agenda Bold, sans-serif;
+ line-height: 1;
+ color:black;
+
+}
+
+h2 {
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+
+}
+
+
+
+
+
+.headline {
+  display: flex;
+  justify-content: center;
+ position: relative;
+/*   top: 50px; */
+  width: 100%;
+}
+
+.subHeadline{
+  display: flex;
+  justify-content: center;
+ position: relative;
+  top: -30px;
+  width: 100%;
+}
+
+.button{
+
+
+/*   top: 200px; */
+  width: 100%;
+
+
+}
+
+#confetti {
+  overflow-y: hidden;
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  height: 100%;
+  position: absolute;
+  top: 0;
+}
+
+.button a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-border-radius: 26;
+  -moz-border-radius: 26;
+  border-radius: 26px;
+  width: 200px;
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: .8em 1em;
+  background-color: #f9e038;
+  color: black;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+
+
+
+}
+
+
+
+
+.ParkBackground{
+
+  position: fixed;
+  bottom : -150px;
+  width: 100%;
+  z-index: 0;
+  left: -0px;
+
+
+
+}

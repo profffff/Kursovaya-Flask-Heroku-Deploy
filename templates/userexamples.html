@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div>
+    <table>
+        {% if account %}
+        <h1>Use cases:</h1>
+        <ul>
+        {% for list in account %}
+            <tr>
+          <li>
+              <a>Case: {{ list['usage_example'] }}</a></p>
+              <p></p>
+              <a>Translation: {{ list['example_translation'] }}</a>
+              <p></p>
+          </li>
+            </tr>
+        {% endfor %}
+        </ul>
+        {% else %}
+         <h1>No cases :(</h1>
+      {% endif %}
+    </table>
+</div>
+
+{% endblock %}

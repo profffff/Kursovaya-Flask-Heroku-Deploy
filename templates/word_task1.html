@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+<div style="text-align:center">
+    <h2>Select correct translation</h2>
+    <h5 >Attempts remaining: {{attempt}}</h5>
+    <div >
+        <table>
+            <ul>
+                <tr>
+                    <p>
+                <i style="font-size: 250%">Word: {{word[0]}}</i>
+                    </p>
+                    <form method="post">
+                {% for translation in translations %}
+                <p style="vertical-align:center;margin: -0px 50px">
+                      <input name="answer" type="submit" class="btn btn-dark" value="{{translation[0]}}"/>
+                    </p>
+                        <p></p>
+                {% endfor %}
+                    </form>
+                </ul>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

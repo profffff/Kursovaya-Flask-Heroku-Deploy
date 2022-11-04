@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+<div style="text-align:center">
+<h2  style="text-align:center;">New word</h2>
+    <table>
+        <ul>
+            <tr>
+                <form method="post">
+
+                    <input style="margin: 5px 8px" type="submit" name="starlearning" class="btn btn-success" value="Don't know"/>
+                    <input style="margin: 0px 8px" type="submit" name="alreadylearned" class="btn btn-success" value="Know"/>
+
+
+                    </form>
+            <p>    <a style="vertical-align:center;margin: -0px 0px">Stage: {{word[0]}}</a></p>
+          <p>  <a style="vertical-align:center;margin: -0px 0px">Word: {{word[3]}}</a></p>
+                <p>  <img src="/static/img/apple.jpg" width="60" height="70"></p>
+           <p>   <a style="vertical-align:center;margin: -0px 0px">Word translation: {{word[4]}}</a></p>
+
+            </tr>
+            {% for example in word_usage %}
+            <p>    <a style="margin: -0px 0px">Use case: {{example[0]}}</a></p>
+            <p>    <a style="margin: -0px 0px">Translation: {{example[1]}}</a></p>
+            {% endfor %}
+            </ul>
+
+
+    </table>
+</div>
+
+{% endblock %}
