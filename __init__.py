@@ -1,18 +1,18 @@
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from main import main
+from main import app
 from config import Config
 
 def create_app(config_class=Config):
     # ...
-    if not main.debug and not main.testing:
+    if not app.debug and not app.testing:
         # ...
 
-        if main.config['LOG_TO_STDOUT']:
+        if app.config['LOG_TO_STDOUT']:
             stream_handler = logging.StreamHandler()
             stream_handler.setLevel(logging.INFO)
-            main.logger.addHandler(stream_handler)
+            app.logger.addHandler(stream_handler)
         else:
             if not os.path.exists('logs'):
                 os.mkdir('logs')
@@ -22,9 +22,9 @@ def create_app(config_class=Config):
                 '%(asctime)s %(levelname)s: %(message)s '
                 '[in %(pathname)s:%(lineno)d]'))
             file_handler.setLevel(logging.INFO)
-            main.logger.addHandler(file_handler)
+            app.logger.addHandler(file_handler)
 
-        main.logger.setLevel(logging.INFO)
-        main.logger.info('Main startup')
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Main startup')
 
-    return main
+    return app
