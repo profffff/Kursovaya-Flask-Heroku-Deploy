@@ -6,17 +6,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from time import sleep
 from random import shuffle
 from io import TextIOWrapper
+from config import DB_NAME, DB_USER, DB_PASS, DB_HOST
 
 #from flaskext.noextref import NoExtRef
 
 main = Flask(__name__)
 main.secret_key = 'mi-ne-pendosi'
 
-DB_NAME = 'words'
-DB_USER = 'admin'
-DB_PASS = 'admin'
-# DB_HOST = 'localhost'
-DB_HOST = 'postgres://cssuehtndgmavj:4a96332271add397fcf4ede36bbb3fa94a77ab2329f78c4f051d2c5ac306fd58@ec2-54-91-223-99.compute-1.amazonaws.com:5432/d18idpvuarqsho'
+# DB_NAME = 'words'
+# DB_USER = 'admin'
+# DB_PASS = 'admin'
+# # DB_HOST = 'localhost'
+#DB_URL = 'postgres://cssuehtndgmavj:4a96332271add397fcf4ede36bbb3fa94a77ab2329f78c4f051d2c5ac306fd58@ec2-54-91-223-99.compute-1.amazonaws.com:5432/d18idpvuarqsho'
 
 conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 
