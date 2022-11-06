@@ -14,13 +14,6 @@ import cli
 app = Flask(__name__)
 app.secret_key = 'mi-ne-pendosi'
 
-# DB_NAME = 'words'
-# DB_USER = 'admin'
-# DB_PASS = 'admin'
-# # DB_HOST = 'localhost'
-#DB_URL = 'postgres://cssuehtndgmavj:4a96332271add397fcf4ede36bbb3fa94a77ab2329f78c4f051d2c5ac306fd58@ec2-54-91-223-99.compute-1.amazonaws.com:5432/d18idpvuarqsho'
-
-
 try:
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT)
 except:
@@ -30,10 +23,6 @@ except:
 def create_db():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(cli.create_database())
-    cursor.execute('SELECT * FROM user_db')
-    # Fetch one record and return result
-    account = cursor.fetchall()
-    print(account)
 
 @app.route('/')
 def home():
@@ -51,21 +40,15 @@ def home():
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-
     # Check if "username" and "password" POST requests exist (user submitted form)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         user_login = request.form['username']
         password = request.form['password']
-        print(password)
 
-        # Check if account exists using MySQL
         cursor.execute('SELECT * FROM user_db WHERE user_login = %s', (user_login,))
-        # Fetch one record and return result
         account = cursor.fetchone()
-
         if account:
             password_rs = account['user_password']
-            print(password_rs)
             # If account exists in users table in out database
             if check_password_hash(password_rs, password):
                 # Create session data, we can access this data in other routes
@@ -98,11 +81,11 @@ def register():
         user_login = request.form['username']
         password = request.form['password']
         _hashed_password = generate_password_hash(password)
-        # Check if account exists using MySQL
+
+        # Check if account exists using PostgreSQL
         cursor.execute('SELECT * FROM user_db WHERE user_login = %s', (user_login,))
         account = cursor.fetchone()
-        print('ff')
-        print(account)
+
         # If account exists show error and validation checks
         if account:
             flash('Account already exists!')
@@ -135,9 +118,9 @@ def logout():
 
 @app.route('/createlist', methods=['GET', 'POST'])
 def create_list():
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if 'loggedin' in session:
         if request.method == 'POST':
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             name_list = request.form['name_list']
 
             if not re.match(r'[A-Za-z0-9]+', name_list):
@@ -150,8 +133,8 @@ def create_list():
                 # Account don't exist and the form data is valid, now insert new account into users table
                 cursor.execute("INSERT INTO word_list (name_list, user_login) VALUES (%s,%s)",
                                (name_list, session['user_login']))
-                conn.commit()
                 flash('List created!', category='success')
+                conn.commit()
 
                 return redirect(url_for('userlists'))
 
@@ -166,10 +149,10 @@ def create_list():
 
 @app.route('/profile')
 def profile():
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     # Check if user is loggedin
     if 'loggedin' in session:
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute('SELECT * FROM user_db WHERE user_login = %s', [session['user_login']])
         account = cursor.fetchone()
         # Show the profile page with account info
@@ -352,12 +335,17 @@ def deletelist(id):
                 "SELECT user_login FROM user_added_list WHERE id_list = %s",
                 [id])
             whose_list = cursor.fetchone()
-            print(whose_list, session['user_login'])
 
             cursor.execute(
                 "SELECT word_id FROM word WHERE id_list = %s",
                 [id])
             words_to_delete = cursor.fetchall()
+
+            for word_id in words_to_delete:
+                cursor.execute(
+                    "DELETE FROM word_learning WHERE word_id = %s",
+                    [word_id[0]])
+                conn.commit()
 
             if whose_list is not None:
                 cursor.execute(
@@ -371,21 +359,15 @@ def deletelist(id):
                         [word_id[0]])
                     conn.commit()
 
-                cursor.execute(
-                    "DELETE FROM word WHERE id_list = %s",
-                    [id])
-                conn.commit()
-                cursor.execute(
-                    "DELETE FROM word_list WHERE id_list = %s",
-                    [id])
-                conn.commit()
+                    cursor.execute(
+                        "DELETE FROM word WHERE id_list = %s",
+                        [id])
+                    conn.commit()
 
-            for word_id in words_to_delete:
-                cursor.execute(
-                    "DELETE FROM word_learning WHERE word_id = %s",
-                    [word_id[0]])
-                conn.commit()
-
+                    cursor.execute(
+                        "DELETE FROM word_list WHERE id_list = %s",
+                        [id])
+                    conn.commit()
 
         return redirect(url_for('userlists'))
     return render_template('delete_list.html')
