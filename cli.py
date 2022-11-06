@@ -89,3 +89,4 @@ def create_database():
     FOR EACH ROW
     EXECUTE PROCEDURE noexample();
     '''
+    return postgre_database
