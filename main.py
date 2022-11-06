@@ -25,8 +25,6 @@ try:
 except:
     print('no conn')
 
-cli.create_database()
-
 @app.route('/')
 def home():
     # Check if user is loggedin
@@ -987,6 +985,7 @@ def kursovaya_win():
 
 
 if __name__ == "__main__":
+    cli.create_database()
     app.run(debug=True)
 
 
