@@ -6,9 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from time import sleep
 from random import shuffle
 from io import TextIOWrapper
-import os
-import logging
-from logging.handlers import RotatingFileHandler
+
 #from flaskext.noextref import NoExtRef
 
 main = Flask(__name__)
@@ -17,12 +15,10 @@ main.secret_key = 'mi-ne-pendosi'
 DB_NAME = 'words'
 DB_USER = 'admin'
 DB_PASS = 'admin'
-DB_HOST = 'localhost'
+# DB_HOST = 'localhost'
+DB_HOST = 'postgres://cssuehtndgmavj:4a96332271add397fcf4ede36bbb3fa94a77ab2329f78c4f051d2c5ac306fd58@ec2-54-91-223-99.compute-1.amazonaws.com:5432/d18idpvuarqsho'
+
 conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-
-
-
-
 
 
 @main.route('/')
@@ -120,23 +116,6 @@ def register():
 def logout():
     # Remove session data, this will log the user out
     session.clear()
-    # session.pop('loggedin', None)
-    # session.pop('user_login', None)
-    # session.pop('user_name', None)
-    # session.pop('id_list', None)
-    # session.pop('word_id', None)
-    # session.pop('words_to_learn', None)
-    # session.pop('current_word', None)
-    # session.pop('our_words_translations', None)
-    # session.pop('our_translations', None)
-    # session.pop('our_words', None)
-    # session.pop('attempts', None)
-    # session.pop('previous_click', None)
-    # session.pop('numbers', None)
-    # session.pop('word', None)
-    # session.pop('word_usage', None)
-
-    # Redirect to login page
     return redirect(url_for('login'))
 
 
@@ -630,7 +609,6 @@ def memorizewords():
 
 
 
-
 @main.route('/task1', methods=['GET', 'POST'])
 def select_translation():
     if session['istask2']:
@@ -1005,32 +983,5 @@ def kursovaya_win():
 if __name__ == "__main__":
     main.run(debug=True)
 
-class Config(object):
-    # ...
-    LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
 
-if __name__ == "__init__":
-    def create_app(config_class=Config):
-        # ...
-        if not main.debug and not main.testing:
-            # ...
 
-            if main.config['LOG_TO_STDOUT']:
-                stream_handler = logging.StreamHandler()
-                stream_handler.setLevel(logging.INFO)
-                main.logger.addHandler(stream_handler)
-            else:
-                if not os.path.exists('logs'):
-                    os.mkdir('logs')
-                file_handler = RotatingFileHandler('logs/main.log',
-                                                   maxBytes=10240, backupCount=10)
-                file_handler.setFormatter(logging.Formatter(
-                    '%(asctime)s %(levelname)s: %(message)s '
-                    '[in %(pathname)s:%(lineno)d]'))
-                file_handler.setLevel(logging.INFO)
-                main.logger.addHandler(file_handler)
-
-            main.logger.setLevel(logging.INFO)
-            main.logger.info('Main startup')
-
-        return main
