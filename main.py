@@ -30,7 +30,7 @@ def home():
     #session.permanent = True
     print(session)
     if 'loggedin' in session:
-        session['word_id'] = 0 #in place where we know or don't know new word
+        session['word_id'] = 0  #in place where we know or don't know new word
         # User is loggedin show them the home page
         return render_template('home.html', username=session['user_name'])
     # User is not loggedin redirect to login page
@@ -890,7 +890,7 @@ def istimetomemorize(): #выдаем 5 слов для изучения под�
                    "OR (stage = 6)"
                    "OR (stage = 8)"
                    "OR (stage = 10) )"
-                   "ORDER BY RANDOM()", session['user_login'])
+                   "ORDER BY RANDOM()", (session['user_login'],))
 
     words_to_learn = cursor.fetchall()
 
@@ -909,7 +909,7 @@ def istimetorepetition(): #выдаем 5 слов для изучения по�
                    "OR (stage = 7 AND LOCALTIMESTAMP - INTERVAL '3 DAYS' > date_gain_stage)" # 
                    "OR (stage = 9 AND LOCALTIMESTAMP - INTERVAL '7 DAYS' > date_gain_stage)" #
                    "OR (stage = 11 AND LOCALTIMESTAMP - INTERVAL '30 DAYS' > date_gain_stage)) " #
-                   "ORDER BY RANDOM()", session['user_login'])
+                   "ORDER BY RANDOM()", (session['user_login'],))
 
     words_to_learn = cursor.fetchall()
     return words_to_learn
@@ -918,7 +918,7 @@ def istimetorepetition(): #выдаем 5 слов для изучения по�
 def new_learning_word():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
-        "SELECT stage, date_gain_stage, word_id FROM  word_learning WHERE stage = 0 AND user_login = %s ORDER BY RANDOM() LIMIT 1 ", session['user_login'])
+        "SELECT stage, date_gain_stage, word_id FROM  word_learning WHERE stage = 0 AND user_login = %s ORDER BY RANDOM() LIMIT 1 ", (session['user_login'],))
 
     random_word = cursor.fetchone()
     if not random_word:
