@@ -10,8 +10,8 @@ from config import DB_NAME, DB_USER, DB_PASS, DB_HOST
 
 #from flaskext.noextref import NoExtRef
 
-main = Flask(__name__)
-main.secret_key = 'mi-ne-pendosi'
+app = Flask(__name__)
+app.secret_key = 'mi-ne-pendosi'
 
 # DB_NAME = 'words'
 # DB_USER = 'admin'
@@ -19,10 +19,13 @@ main.secret_key = 'mi-ne-pendosi'
 # # DB_HOST = 'localhost'
 #DB_URL = 'postgres://cssuehtndgmavj:4a96332271add397fcf4ede36bbb3fa94a77ab2329f78c4f051d2c5ac306fd58@ec2-54-91-223-99.compute-1.amazonaws.com:5432/d18idpvuarqsho'
 
-conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+try:
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+except:
+    print('no conn')
 
 
-@main.route('/')
+@app.route('/')
 def home():
     # Check if user is loggedin
     #session.permanent = True
@@ -35,7 +38,7 @@ def home():
     return redirect(url_for('login'))
 
 
-@main.route('/login/', methods=['GET', 'POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def login():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
@@ -75,7 +78,7 @@ def login():
 
     return render_template('login.html')
 
-@main.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     # Check if "username", "password" and "email" POST requests exist (user submitted form)
@@ -113,14 +116,14 @@ def register():
     return render_template('register.html')
 
 
-@main.route('/logout')
+@app.route('/logout')
 def logout():
     # Remove session data, this will log the user out
     session.clear()
     return redirect(url_for('login'))
 
 
-@main.route('/createlist', methods=['GET', 'POST'])
+@app.route('/createlist', methods=['GET', 'POST'])
 def create_list():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if 'loggedin' in session:
@@ -151,7 +154,7 @@ def create_list():
     return redirect(url_for('login'))
 
 
-@main.route('/profile')
+@app.route('/profile')
 def profile():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
@@ -165,7 +168,7 @@ def profile():
     return redirect(url_for('login'))
 
 
-@main.route('/userlists')
+@app.route('/userlists')
 def userlists():
     if 'loggedin' in session:
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -177,7 +180,7 @@ def userlists():
     return redirect(url_for('login'))
 
 
-@main.route('/userwords/<int:id>', methods=['GET']) #Flask-NoExtRef to hide URL
+@app.route('/userwords/<int:id>', methods=['GET']) #Flask-NoExtRef to hide URL
 def userwords(id):
     if 'loggedin' in session:
         session['id_list'] = id
@@ -188,7 +191,7 @@ def userwords(id):
     return redirect(url_for('login'))
 
 
-@main.route('/publicwords/<int:id>', methods=['GET', 'POST'])
+@app.route('/publicwords/<int:id>', methods=['GET', 'POST'])
 def otheruserwords(id):
     if 'loggedin' in session:
         session['id_list'] = id
@@ -217,7 +220,7 @@ def otheruserwords(id):
     return redirect(url_for('login'))
 
 
-@main.route('/userexamples/<int:id>', methods=['GET'])
+@app.route('/userexamples/<int:id>', methods=['GET'])
 def userexamples(id):
     if 'loggedin' in session:
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -227,7 +230,7 @@ def userexamples(id):
     return redirect(url_for('login'))
 
 
-@main.route('/creating', methods=['GET', 'POST'])
+@app.route('/creating', methods=['GET', 'POST'])
 def createwordandexamples():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if 'loggedin' in session:
@@ -269,7 +272,7 @@ def createwordandexamples():
     return redirect(url_for('login'))
 
 
-@main.route('/listsfromotherusers', methods=['GET', 'POST'])
+@app.route('/listsfromotherusers', methods=['GET', 'POST'])
 def lists_from_users():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if 'loggedin' in session:
@@ -302,7 +305,7 @@ def lists_from_users():
     return redirect(url_for('login'))
 
 
-@main.route('/makingpublic/<int:id>', methods=['GET', 'POST']) #юрл никогда не видно, промежуточная функция
+@app.route('/makingpublic/<int:id>', methods=['GET', 'POST']) #юрл никогда не видно, промежуточная функция
 def makelistpublic(id):
     if request.method == 'POST':
         if (request.form.get('yes', None)):
@@ -317,7 +320,7 @@ def makelistpublic(id):
     return render_template('delete_list.html')
 
 
-@main.route('/renamelist/<int:id>', methods=['GET', 'POST'])
+@app.route('/renamelist/<int:id>', methods=['GET', 'POST'])
 def renamelist(id):
     if request.method == 'POST':
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -330,7 +333,7 @@ def renamelist(id):
     return render_template('rename_list.html')
 
 
-@main.route('/deletelist/<int:id>', methods=['GET', 'POST'])
+@app.route('/deletelist/<int:id>', methods=['GET', 'POST'])
 def deletelist(id):
     if request.method == 'POST':
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -378,7 +381,7 @@ def deletelist(id):
     return render_template('delete_list.html')
 
 
-@main.route('/deleteword/<int:id>', methods=['GET', 'POST'])
+@app.route('/deleteword/<int:id>', methods=['GET', 'POST'])
 def deleteword(id):
     if request.method == 'POST':
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -399,7 +402,7 @@ def deleteword(id):
     return render_template('delete_list.html')
 
 
-@main.route('/editword/<int:id>', methods=['GET', 'POST'])
+@app.route('/editword/<int:id>', methods=['GET', 'POST'])
 def editword(id):
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute('SELECT usage_example, example_translation FROM word_usage WHERE word_id = %s',
@@ -439,7 +442,7 @@ def editword(id):
     return render_template('edit_word.html', example=word_examples, word=word_info)
 
 
-@main.route('/adding', methods=['GET', 'POST']) #юрл никогда не видно, промежуточная функция
+@app.route('/adding', methods=['GET', 'POST']) #юрл никогда не видно, промежуточная функция
 def addlist():
     id = request.args.get('id', None)
     list_id = [id][0]
@@ -466,7 +469,7 @@ def addlist():
     return redirect(url_for('login'))
 
 
-@main.route('/new_word', methods=['GET', 'POST'])
+@app.route('/new_word', methods=['GET', 'POST'])
 def word_learning():
     if 'loggedin' in session:
         words_to_repetition = istimetorepetition()
@@ -524,7 +527,7 @@ def word_learning():
     return redirect(url_for('login'))
 
 
-@main.route('/repetition', methods=['GET', 'POST'])
+@app.route('/repetition', methods=['GET', 'POST'])
 def repetitionwords():
     i = session['current_word']
     remain = session['number_of_words']
@@ -575,7 +578,7 @@ def repetitionwords():
     return render_template('word_repetition.html', word=session['words_to_learn'][i][4], word_ex=session['words_usage'][i], remain=remain, attempt=attempts)
 
 
-@main.route('/memorizing', methods=['GET', 'POST'])
+@app.route('/memorizing', methods=['GET', 'POST'])
 def memorizewords():
     if request.method == 'POST':
         if (request.form.get('nextword', None)):
@@ -610,7 +613,7 @@ def memorizewords():
 
 
 
-@main.route('/task1', methods=['GET', 'POST'])
+@app.route('/task1', methods=['GET', 'POST'])
 def select_translation():
     if session['istask2']:
         return redirect(url_for('memorizewords'))
@@ -653,7 +656,7 @@ def select_translation():
     return render_template('word_task1.html', word=words[i], translations=translations, index_word=i, attempt=attempt)
 
 
-@main.route('/task2', methods=['GET', 'POST'])
+@app.route('/task2', methods=['GET', 'POST'])
 def select_word():
     session['istask2'] = True
     if session['istask3']:
@@ -699,7 +702,7 @@ def select_word():
     return render_template('word_task2.html', word=words[i], attempt=attempt)
 
 
-@main.route('/task3', methods=['GET', 'POST'])
+@app.route('/task3', methods=['GET', 'POST'])
 def matching():
     session['istask3'] = True
     if session['isresults']:
@@ -757,7 +760,7 @@ def matching():
     return render_template('word_task3.html', words=words, ind=numbers, attempt=attempt)
 
 
-@main.route('/results', methods=['GET', 'POST'])
+@app.route('/results', methods=['GET', 'POST'])
 def task_results():
     if not session['isresults']: #prevent from reloading
         session['isresults'] = True
@@ -775,7 +778,7 @@ def task_results():
         return redirect(url_for('memorizewords'))
 
 
-@main.route('/download', methods=['GET', 'POST'])
+@app.route('/download', methods=['GET', 'POST'])
 def download():
     if request.method == 'POST':
         file = request.files['file'] #io.BytesIO format
@@ -976,13 +979,13 @@ def firststage(word_id):
     conn.commit()
 
 
-@main.route('/win', methods=['GET', 'POST'])
+@app.route('/win', methods=['GET', 'POST'])
 def kursovaya_win():
     return render_template('kursovaya_win.html')
 
 
 if __name__ == "__main__":
-    main.run(debug=True)
+    app.run(debug=True)
 
 
 
