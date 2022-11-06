@@ -21,16 +21,19 @@ app.secret_key = 'mi-ne-pendosi'
 #DB_URL = 'postgres://cssuehtndgmavj:4a96332271add397fcf4ede36bbb3fa94a77ab2329f78c4f051d2c5ac306fd58@ec2-54-91-223-99.compute-1.amazonaws.com:5432/d18idpvuarqsho'
 
 
-def create_db():
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute(cli.create_database())
-
 try:
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT)
-    create_db()
 except:
     print('no conn')
 
+
+def create_db():
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(cli.create_database())
+    cursor.execute('SELECT * FROM user_db')
+    # Fetch one record and return result
+    account = cursor.fetchall()
+    print(account)
 
 @app.route('/')
 def home():
