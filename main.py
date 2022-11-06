@@ -7,6 +7,7 @@ from time import sleep
 from random import shuffle
 from io import TextIOWrapper
 from config import DB_NAME, DB_USER, DB_PASS, DB_HOST, DB_PORT
+import cli
 
 #from flaskext.noextref import NoExtRef
 
@@ -24,6 +25,7 @@ try:
 except:
     print('no conn')
 
+cli.create_database()
 
 @app.route('/')
 def home():
