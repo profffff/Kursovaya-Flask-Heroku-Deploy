@@ -4,11 +4,11 @@
 
 
 {% block content %}
-<h1>Your lists</h1>
+<h1>Your collections</h1>
 <div>
-    <a class="btn btn-dark" href="{{ url_for('create_list') }}">Create new list!</a>
+    <a class="btn btn-dark" href="{{ url_for('create_list') }}">Create new collection!</a>
     <p></p>
-    <p>Your lists that you created:</p>
+    <p>Collections that you created:</p>
     <table>
         {% if account %}
         <ul>
@@ -44,7 +44,7 @@
 
 
 <div>
-    <p>Your lists that other users created:</p>
+    <p>Collections that other users created:</p>
     <table>
         {% if added_lists %}
         <ul>

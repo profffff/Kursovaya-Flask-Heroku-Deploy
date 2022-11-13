@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, flash, session, redirect, send_file
+from flask import Flask, render_template, url_for, request, flash, session, redirect
 import psycopg2
 import psycopg2.extras
 import re
@@ -9,26 +9,23 @@ from io import TextIOWrapper
 from config import DB_NAME, DB_USER, DB_PASS, DB_HOST, DB_PORT
 import cli
 
-#from flaskext.noextref import NoExtRef
-
 app = Flask(__name__)
 app.secret_key = 'mi-ne-pendosi'
 
 try:
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT)
 except:
-    print('no conn')
+    print('no connection')
 
 
 def create_db():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(cli.create_database())
 
+
 @app.route('/')
 def home():
     # Check if user is loggedin
-    #session.permanent = True
-    print(session)
     if 'loggedin' in session:
         session['word_id'] = 0  #in place where we know or don't know new word
         # User is loggedin show them the home page
@@ -65,11 +62,10 @@ def login():
             flash('Incorrect username/password')
 
     elif request.method == 'POST':
-        # Form is empty... (no POST data)
         flash('Please fill out the form!')
-        # Show registration form with message (if any)
 
     return render_template('login.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -98,13 +94,10 @@ def register():
             cursor.execute("INSERT INTO user_db (user_login, user_password, user_name) VALUES (%s,%s,%s)",
                            (user_login, _hashed_password, fullname))
             conn.commit()
-
             return redirect(url_for('login'))
 
     elif request.method == 'POST':
-        # Form is empty... (no POST data)
         flash('Please fill out the form!')
-        # Show registration form with message (if any)
 
     return render_template('register.html')
 
@@ -130,34 +123,27 @@ def create_list():
             elif (len(name_list) > 30):
                 flash('Max length is 30!', category='error')
             else:
-                # Account don't exist and the form data is valid, now insert new account into users table
                 cursor.execute("INSERT INTO word_list (name_list, user_login) VALUES (%s,%s)",
                                (name_list, session['user_login']))
                 flash('List created!', category='success')
                 conn.commit()
-
                 return redirect(url_for('userlists'))
 
         elif request.method == 'POST':
-            # Form is empty... (no POST data)
             flash('Please fill out the form!')
 
         return render_template('createlist.html')
-
     return redirect(url_for('login'))
 
 
 @app.route('/profile')
 def profile():
-
-    # Check if user is loggedin
     if 'loggedin' in session:
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute('SELECT * FROM user_db WHERE user_login = %s', [session['user_login']])
         account = cursor.fetchone()
         # Show the profile page with account info
         return render_template('profile.html', account=account)
-    # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
 
@@ -165,9 +151,11 @@ def profile():
 def userlists():
     if 'loggedin' in session:
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute('SELECT id_list, name_list, is_public FROM word_list WHERE user_login = %s', [session['user_login']])
+        cursor.execute('SELECT id_list, name_list, is_public FROM word_list WHERE user_login = %s',
+                       [session['user_login']])
         account = cursor.fetchall()
-        cursor.execute('SELECT name_list, id_list FROM user_added_list JOIN word_list USING (id_list) WHERE user_added_list.user_login = %s', [session['user_login']])
+        cursor.execute('SELECT name_list, id_list FROM user_added_list JOIN word_list USING (id_list)'
+                       ' WHERE user_added_list.user_login = %s', [session['user_login']])
         added_lists = cursor.fetchall()
         return render_template('user_lists.html', account=account, added_lists=added_lists)
     return redirect(url_for('login'))
@@ -176,6 +164,8 @@ def userlists():
 @app.route('/userwords/<int:id>', methods=['GET']) #Flask-NoExtRef to hide URL
 def userwords(id):
     if 'loggedin' in session:
+        if prevent_URL_glitch(id):
+            return redirect(url_for('home'))
         session['id_list'] = id
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute('SELECT word_id, word_name, word_translation FROM word WHERE id_list = %s', [id])
@@ -189,24 +179,24 @@ def otheruserwords(id):
     if 'loggedin' in session:
         session['id_list'] = id
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
         cursor.execute('SELECT word_id, word_name, word_translation FROM word WHERE id_list = %s', [id])
         account = cursor.fetchall()
 
         if request.method == 'POST': #submit rating
             rating = request.form['rating']
-            print(rating)
             if rating == 'Submit':
                 flash('Choose a rating!', category='error')
             else:
-                cursor.execute("SELECT EXISTS (SELECT * FROM list_rating WHERE id_list = %s AND user_login = %s)", (id, session['user_login']))
+                cursor.execute("SELECT EXISTS (SELECT * FROM list_rating WHERE id_list = %s AND user_login = %s)",
+                               (id, session['user_login']))
                 alreadyrated = cursor.fetchone()
-                print(alreadyrated)
                 if alreadyrated[0]:
                     flash('Looks like you have rated this list!', category='error')
                 else:
                     cursor.execute(
-                    "INSERT INTO list_rating (rating_value, id_list, user_login) VALUES (%s, %s, %s) ",
-                    (rating, id, session['user_login']))
+                        "INSERT INTO list_rating (rating_value, id_list, user_login) VALUES (%s, %s, %s) ",
+                        (rating, id, session['user_login']))
                     conn.commit()
                     flash('Thanks :)', category='success')
         return render_template('otheruserwords.html', account=account)
@@ -234,8 +224,8 @@ def createwordandexamples():
             example_name = request.form.getlist('caseex[]')
             if not word_name or not word_translation:
                 flash('Please fill out all forms!', category='error')
-            elif len(word_name) > 30 :
-                flash('Max length of word is 30', category='error')
+            elif len(word_name) > 60:
+                flash('Max length of word is 60', category='error')
             elif len(word_translation) > 60:
                 flash('Max length of translation is 60', category='error')
             else:
@@ -252,35 +242,34 @@ def createwordandexamples():
                         conn.commit()
 
                 cursor.execute(
-                    "INSERT INTO word_learning (stage, date_gain_stage, user_login, word_id) VALUES (%s,LOCALTIMESTAMP,%s,%s)",
+                    "INSERT INTO word_learning (stage, date_gain_stage, user_login, word_id) "
+                    "VALUES (%s,LOCALTIMESTAMP,%s,%s)",
                     (0, session['user_login'], word_id))
 
                 conn.commit()
 
                 flash('Word created!', category='success')
                 return redirect(url_for('userwords', id=session['id_list']))
-
         return render_template('create_word_and_examples.html')
-
     return redirect(url_for('login'))
 
 
 @app.route('/listsfromotherusers', methods=['GET', 'POST'])
 def lists_from_users():
+    value = request.args.get('value')
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if 'loggedin' in session:
-
         cursor.execute('SELECT id_list, name_list, user_login FROM word_list WHERE is_public = True ')
         account = cursor.fetchall()
 
         cursor.execute('SELECT id_list FROM user_added_list WHERE user_login = %s', [session['user_login']])
         user_added_lists = cursor.fetchall()
 
-        #если будет долго, можно за один проход по аккаунту сделать, объединить с нижним
+        # если будет долго, можно за один проход по аккаунту сделать, объединить с нижним
         isuser_list = [i[2] in ([session['user_login']]) or i[0] in (j[0] for j in user_added_lists) for i in account]
 
-
-        cursor.execute('SELECT id_list, COUNT(user_login) as user_quantity, SUM(rating_value)/COUNT(user_login) as rating FROM list_rating GROUP BY id_list HAVING COUNT(user_login) >= 1')
+        cursor.execute(
+            'SELECT id_list, COUNT(user_login) as user_quantity, SUM(rating_value)/COUNT(user_login) as rating FROM list_rating GROUP BY id_list HAVING COUNT(user_login) >= 1')
         lists_rating_from_table = cursor.fetchall()
 
         lists_rating = []
@@ -294,12 +283,25 @@ def lists_from_users():
             if not i_in_j:
                 lists_rating.append(["Not yet rated", 'Nobody'])
 
-        return render_template('lists_from_users.html', account=account, isuser_list=isuser_list, lists_rating=lists_rating)
+        public_lists = list(zip(account, lists_rating, isuser_list))
+        if value == '1': #desc sort
+            public_lists = (sorted(public_lists, key=lambda x: x[1][0], reverse=True))
+        elif value == '2': #asc sort
+            public_lists = (sorted(public_lists, key=lambda x: x[1][0]))
+
+        if session['user_login'] in admins_logins():
+            isadmin = True
+        else:
+            isadmin = False
+
+        return render_template('lists_from_users.html', public_lists=public_lists, isadmin=isadmin)
     return redirect(url_for('login'))
 
 
 @app.route('/makingpublic/<int:id>', methods=['GET', 'POST']) #юрл никогда не видно, промежуточная функция
 def makelistpublic(id):
+    if prevent_URL_glitch(id):
+        return redirect(url_for('home'))
     if request.method == 'POST':
         if (request.form.get('yes', None)):
             cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -315,6 +317,8 @@ def makelistpublic(id):
 
 @app.route('/renamelist/<int:id>', methods=['GET', 'POST'])
 def renamelist(id):
+    if prevent_URL_glitch(id):
+        return redirect(url_for('home'))
     if request.method == 'POST':
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         name = request.form['newname']
@@ -328,19 +332,19 @@ def renamelist(id):
 
 @app.route('/deletelist/<int:id>', methods=['GET', 'POST'])
 def deletelist(id):
+    if prevent_URL_glitch(id):
+        return redirect(url_for('home'))
     if request.method == 'POST':
-        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         if (request.form.get('yes', None)):
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             cursor.execute(
                 "SELECT user_login FROM user_added_list WHERE id_list = %s",
                 [id])
             whose_list = cursor.fetchone()
-
             cursor.execute(
                 "SELECT word_id FROM word WHERE id_list = %s",
                 [id])
             words_to_delete = cursor.fetchall()
-
             for word_id in words_to_delete:
                 cursor.execute(
                     "DELETE FROM word_learning WHERE word_id = %s",
@@ -359,15 +363,20 @@ def deletelist(id):
                         [word_id[0]])
                     conn.commit()
 
-                    cursor.execute(
-                        "DELETE FROM word WHERE id_list = %s",
-                        [id])
-                    conn.commit()
+                cursor.execute(
+                    "DELETE FROM word WHERE id_list = %s",
+                    [id])
+                conn.commit()
 
-                    cursor.execute(
-                        "DELETE FROM word_list WHERE id_list = %s",
-                        [id])
-                    conn.commit()
+                cursor.execute(
+                    "DELETE FROM list_rating WHERE id_list = %s",
+                    [id])
+                conn.commit()
+
+                cursor.execute(
+                    "DELETE FROM word_list WHERE id_list = %s",
+                    [id])
+                conn.commit()
 
         return redirect(url_for('userlists'))
     return render_template('delete_list.html')
@@ -375,6 +384,9 @@ def deletelist(id):
 
 @app.route('/deleteword/<int:id>', methods=['GET', 'POST'])
 def deleteword(id):
+    if prevent_URL_glitch_2(id):
+        return redirect(url_for('home'))
+
     if request.method == 'POST':
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         if (request.form.get('yes', None)):
@@ -396,6 +408,9 @@ def deleteword(id):
 
 @app.route('/editword/<int:id>', methods=['GET', 'POST'])
 def editword(id):
+    if prevent_URL_glitch_2(id):
+        return redirect(url_for('home'))
+
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute('SELECT usage_example, example_translation FROM word_usage WHERE word_id = %s',
                    [id])
@@ -403,17 +418,15 @@ def editword(id):
     cursor.execute('SELECT word_name, word_translation FROM word WHERE word_id = %s',
                    [id])
     word_info = cursor.fetchall()[0]
-    print(id)
     if request.method == 'POST':
         word_name = request.form['word_name']
         word_translation = request.form['word_translation']
         example_translation = request.form.getlist('caseextrans[]')
         example_name = request.form.getlist('caseex[]')
-        print(word_name)
         if not word_name or not word_translation:
             flash('Please fill out all forms!', category='error')
-        elif len(word_name) > 30:
-            flash('Max length of word is 30', category='error')
+        elif len(word_name) > 60:
+            flash('Max length of word is 60', category='error')
         elif len(word_translation) > 60:
             flash('Max length of translation is 60', category='error')
         else:
@@ -430,7 +443,6 @@ def editword(id):
 
             flash('Word edited!', category='success')
             return redirect(url_for('userwords', id=session['id_list']))
-
     return render_template('edit_word.html', example=word_examples, word=word_info)
 
 
@@ -457,7 +469,6 @@ def addlist():
             conn.commit()
 
         return redirect(url_for('userlists'))
-
     return redirect(url_for('login'))
 
 
@@ -538,11 +549,9 @@ def repetitionwords():
             else:
                 session['previous_answer'] = answer
                 j = session['current_word']
-                print(session['words_to_learn'][j])
-                print('gfgd')
                 if answer == session['words_to_learn'][j][3].lower():
                     flash("correct", category="success")
-                    sleep(0.3)
+                    sleep(0.1)
                     session['attempts'] = 3
                     session['repition_result'][j][1] = 1
                     session['current_word'] += 1
@@ -551,14 +560,13 @@ def repetitionwords():
                     session['attempts'] -= 1
                     flash("incorrect", category="error")
                     if session['attempts'] == 0:
-                        sleep(0.3)
+                        sleep(0.1)
                         session['attempts'] = 3
                         session['current_word'] += 1
                         session['number_of_words'] -= 1
                         return render_template('repetition_hint.html', word=session['words_to_learn'][i],
-                                               word_ex=session['words_usage'][i], remain=remain)
+                                           word_ex=session['words_usage'][i], remain=remain)
 
-        print(session['number_of_words'])
     if session['number_of_words'] == 0:
         repetitionresults()
         return redirect(url_for('word_learning'))
@@ -566,7 +574,6 @@ def repetitionwords():
     i = session['current_word']
     remain = session['number_of_words']
     attempts = session['attempts']
-    print(session['repition_result'])
     return render_template('word_repetition.html', word=session['words_to_learn'][i][4], word_ex=session['words_usage'][i], remain=remain, attempt=attempts)
 
 
@@ -621,7 +628,7 @@ def select_translation():
                 j = session['current_word']
                 if answer == words[j][1].lower():
                     flash("correct", category="success")
-                    sleep(0.3)
+                    sleep(0.1)
                     session['attempts'] = 3
                     session['our_words_translations'][j][2] += 1
                     session['current_word'] += 1
@@ -629,7 +636,7 @@ def select_translation():
                     session['attempts'] -= 1
                     flash("incorrect", category="error")
                     if session['attempts'] == 0:
-                        sleep(0.3)
+                        sleep(0.1)
                         session['attempts'] = 3
                         session['current_word'] += 1
 
@@ -722,10 +729,8 @@ def matching():
                             answer_ind -= 5
 
                     if clc == answer_ind:
-                        print(clc, answer_ind)
                         session['our_words_translations'][clc][2] += 1
                         session['task_results'].append(session['our_words_translations'].pop(clc))
-                        print(session['task_results'])
                         numbers.remove(max(numbers))
                         flash('Correct!', category='success')
                     else:
@@ -804,7 +809,8 @@ def add_words_from_file(data):
                     conn.commit()
                     word_id = cursor.fetchone()[0]
                     cursor.execute(
-                        "INSERT INTO word_learning (stage, date_gain_stage, user_login, word_id) VALUES (%s,LOCALTIMESTAMP,%s,%s)",
+                        "INSERT INTO word_learning (stage, date_gain_stage, user_login, word_id) "
+                        "VALUES (%s,LOCALTIMESTAMP,%s,%s)",
                         (0, session['user_login'], word_id))
                     conn.commit()
                     word_name = ''
@@ -851,7 +857,8 @@ def new_word_stage_memorize(completed_task, word_id):
         if new_stage == -1:
             if old_stage != 1:
                 cursor.execute(
-                    "UPDATE word_learning SET stage = stage + %s, date_gain_stage = LOCALTIMESTAMP WHERE word_id = %s AND user_login = %s",
+                    "UPDATE word_learning SET stage = stage + %s, date_gain_stage = LOCALTIMESTAMP "
+                    "WHERE word_id = %s AND user_login = %s",
                     (new_stage,  word_id, session['user_login']))
                 conn.commit()
                 new_stage = 'has decreased to: ' + str(old_stage - 1)
@@ -862,7 +869,8 @@ def new_word_stage_memorize(completed_task, word_id):
                 new_stage = old_stage = 2
 
             cursor.execute(
-                "UPDATE word_learning SET stage = stage + %s, date_gain_stage = LOCALTIMESTAMP WHERE word_id = %s AND user_login = %s",
+                "UPDATE word_learning SET stage = stage + %s, date_gain_stage = LOCALTIMESTAMP "
+                "WHERE word_id = %s AND user_login = %s",
                 (new_stage, word_id, session['user_login']))
             conn.commit()
             new_stage = 'increased to: ' + str(old_stage + 1)
@@ -899,16 +907,16 @@ def istimetomemorize(): #выдаем 5 слов для изучения под�
     return words_to_learn[:5] #first five
 
 
-def istimetorepetition(): #выдаем 5 слов для изучения подходящей стадии если они есть (пока не проверяю время)
+def istimetorepetition(): #выдаем 5 слов для изучения подходящей стадии если они есть
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute("SELECT stage, date_gain_stage, word_id FROM  word_learning WHERE user_login = %s"
                    " AND (stage, date_gain_stage) IN (SELECT stage, date_gain_stage FROM word_learning "
                    "WHERE "
-                   " (stage = 3 AND LOCALTIMESTAMP - INTERVAL '3 HOURS' > date_gain_stage) " #0 MINUTES
-                   "OR (stage = 5 AND LOCALTIMESTAMP - INTERVAL '1 DAY' > date_gain_stage)" # 
-                   "OR (stage = 7 AND LOCALTIMESTAMP - INTERVAL '3 DAYS' > date_gain_stage)" # 
-                   "OR (stage = 9 AND LOCALTIMESTAMP - INTERVAL '7 DAYS' > date_gain_stage)" #
-                   "OR (stage = 11 AND LOCALTIMESTAMP - INTERVAL '30 DAYS' > date_gain_stage)) " #
+                   " (stage = 3 AND LOCALTIMESTAMP - INTERVAL '3 HOURS' > date_gain_stage) "      #0 MINUTES
+                   "OR (stage = 5 AND LOCALTIMESTAMP - INTERVAL '1 DAY' > date_gain_stage)" 
+                   "OR (stage = 7 AND LOCALTIMESTAMP - INTERVAL '3 DAYS' > date_gain_stage)" 
+                   "OR (stage = 9 AND LOCALTIMESTAMP - INTERVAL '7 DAYS' > date_gain_stage)" 
+                   "OR (stage = 11 AND LOCALTIMESTAMP - INTERVAL '30 DAYS' > date_gain_stage)) " 
                    "ORDER BY RANDOM()", (session['user_login'],))
 
     words_to_learn = cursor.fetchall()
@@ -918,19 +926,17 @@ def istimetorepetition(): #выдаем 5 слов для изучения по�
 def new_learning_word():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
-        "SELECT stage, date_gain_stage, word_id FROM  word_learning WHERE stage = 0 AND user_login = %s ORDER BY RANDOM() LIMIT 1 ", (session['user_login'],))
+        "SELECT stage, date_gain_stage, word_id FROM  word_learning WHERE stage = 0 AND user_login = %s "
+        "ORDER BY RANDOM() LIMIT 1 ", (session['user_login'],))
 
     random_word = cursor.fetchone()
     if not random_word:
-        random_word=['All words are learned', '-', 0]
+        random_word = ['All words are learned', '-', 0]
 
-    print(random_word)
     word_id = random_word[2]
     word_info = get_word_info(word_id)
-    print(word_info)
     word_usage = get_word_examples(word_id)
     word = random_word + word_info
-    print(word)
     return word, word_usage, word_id
 
 
@@ -940,7 +946,7 @@ def get_word_info(word_id):
         "SELECT word_name, word_translation FROM word WHERE word_id = %s ", [word_id])
     word_info = cursor.fetchone()
     if not word_info:
-        word_info = ['Add or create new collections', 'Have a nice day :)']
+        word_info = ['Add or create new collections', '<----------menu----------']
     return word_info
 
 
@@ -948,7 +954,6 @@ def get_word_examples(word_id):
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
         "SELECT usage_example, example_translation FROM word_usage WHERE word_id = %s ", [word_id])
-
     word_usage = cursor.fetchall()
     if not word_usage:
         word_usage = [['No examples', 'No examples']]
@@ -974,6 +979,32 @@ def firststage(word_id):
 @app.route('/win', methods=['GET', 'POST'])
 def kursovaya_win():
     return render_template('kursovaya_win.html')
+
+
+def prevent_URL_glitch(id):
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute('SELECT id_list FROM word_list WHERE id_list = %s AND user_login = %s', (id, session['user_login']))  # prevent URL glitch
+    id_ = cursor.fetchone()
+    if id_ is None:
+        cursor.execute('SELECT id_list FROM user_added_list WHERE id_list = %s AND user_login = %s', (id, session['user_login']))
+        id_ = cursor.fetchone()
+    if id_ is None:
+        return True
+    else:
+        return False
+
+
+def prevent_URL_glitch_2(id):
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute('SELECT id_list FROM word WHERE word_id = %s', [id])
+    id = cursor.fetchone()
+    if id is None:
+        id = [-1]
+    return prevent_URL_glitch(id[0])
+
+
+def admins_logins():
+    return ['admin', 'moderator']
 
 
 if __name__ == "__main__":

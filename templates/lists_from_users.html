@@ -3,35 +3,80 @@
 {% block content %}
 <div>
     <table>
-        {% if account %}
-        <h1>Public lists:</h1>
+        {% if public_lists %}
+        <h1>Public collections</h1>
+        <div class="option">
+		<select name="sort" id="sort" class="postform" onChange="changed(this.value)">
+			<option value="-1">Sorting</option>
+			<option class="level-0" value="1" >Sort by rating (desc)</option>
+            <option class="level-0" value='2'>Sort by rating (asc)</option>
+		</select>
+        </div>
         <ul>
-        {% for list in account %}
+            {%if isadmin %}
+            {% for list in public_lists %}
             <tr>
           <li>
-              <a style="border: 4mm ridge rgba(211, 220, 50, .6);" href="{{ url_for('otheruserwords', id=list['id_list']) }}" class="btn btn-light ">{{ list['name_list'] }}</a>
+              <a style="border: 4mm ridge rgba(211, 220, 50, .6);" href="{{ url_for('otheruserwords', id=list[0][0]) }}" class="btn btn-light ">{{ list[0][1] }}</a>
+              <button style="background-color: #C14545; margin: 0px 0px" type="button" onclick="window.location.href='{{ url_for('deletelist', id=list[0][0]) }}';
+              this.disabled=true;  " name='deletelist' class="btn btn-success"  >Delete</button>
               <p></p>
-              <a>User: {{ list['user_login'] }}</a>
+              <a>Published by: {{ list[0][2] }}</a>
               <p></p>
-              <a>Rating: {{ lists_rating[loop.index0][0] }}</a>
-              <p></p>
-              <a>{{ lists_rating[loop.index0][1] }} liked</a>
+              <a>Rating: {{ list[1][0] }}  ({{ list[1][1] }} liked)</a>
+
               <p></p>
 
-               {% if isuser_list[loop.index0] %}
-               <a style="vertical-align:center;margin: -0px 0px">IT IS YOUR LIST</a><p></p
+               {% if list[2] %}
+               <a style="vertical-align:center;margin: -0px 0px">Your collection</a><p></p
                   {% else %}
-              <button type="button" onclick="window.location.href='{{ url_for('addlist', id=list['id_list']) }}';
-              this.disabled=true;  " name='makepubliclist' class="btn btn-primary"  >ADD LIST</button><p></p
+              <button type="button" onclick="window.location.href='{{ url_for('addlist', id=list[0][0]) }}';
+              this.disabled=true;  " name='makepubliclist' class="btn btn-primary"  >ADD COLLECTION</button><p></p
                   {% endif %}
           </li>
             </tr>
         {% endfor %}
+
+         {% else %}
+
+        {% for list in public_lists %}
+            <tr>
+          <li>
+              <a style="border: 4mm ridge rgba(211, 220, 50, .6);" href="{{ url_for('otheruserwords', id=list[0][0]) }}" class="btn btn-light ">{{ list[0][1] }}</a>
+              <p></p>
+              <a>Published by: {{ list[0][2] }}</a>
+              <p></p>
+              <a>Rating: {{ list[1][0] }}  ({{ list[1][1] }} liked)</a>
+
+              <p></p>
+
+               {% if list[2] %}
+               <a style="vertical-align:center;margin: -0px 0px">Your collection</a><p></p
+                  {% else %}
+              <button type="button" onclick="window.location.href='{{ url_for('addlist', id=list[0][0]) }}';
+              this.disabled=true;  " name='makepubliclist' class="btn btn-primary"  >ADD COLLECTION</button><p></p
+                  {% endif %}
+          </li>
+            </tr>
+        {% endfor %}
+            {% endif %}
         </ul>
         {% else %}
-         <h1>No lists :(</h1>
+         <h1>No collections. Create your own :)</h1>
       {% endif %}
     </table>
 </div>
 
+<script>
+    function changed(value){
+        if (value==1) {
+            window.location.href='{{ url_for('lists_from_users', value=1) }}';
+            $("div.option select").val("1").change();
+            }
+        else if (value==2) {
+            window.location.href='{{ url_for('lists_from_users', value=2) }}';
+            $("div.option select").val("2").change();
+            }
+}
+</script>
 {% endblock %}

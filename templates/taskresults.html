@@ -9,8 +9,8 @@
             <ul>
             {% for word in words %}
             <li>
-                  <a style="vertical-align:center;margin: -0px 0px">Word: {{word[0]}}</a>
-            <p>    <a style="vertical-align:center;margin: 0px 23px">Stage {{word_stages[loop.index0]}}</a></p>
+                  <a style="vertical-align:center;margin: -0px 0px">{{word}}</a>
+            <p>    <a style="vertical-align:center;margin: 0px 10px">Stage {{word_stages[loop.index0]}}</a></p>
                 </li>
             {% endfor %}
                 <p><form method="post"> </p>

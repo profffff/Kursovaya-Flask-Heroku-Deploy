@@ -12,18 +12,16 @@
               this.disabled=true; " class="btn btn-primary"  >Remembered</button>
                 <p></p>
                     <p>    <a >Stage: {{word[0]}}</a></p>
-          <p>  <a >Word: {{word[3]}}</a></p>
-           <p>   <a>Word translation: {{word[4]}}</a></p>
+          <p>  <a><b>{{word[3]}}</b></a></p>
+           <p>   <a>{{word[4]}}</a></p>
             {% for ex in word_ex %}
             <li>
-                 <a style="vertical-align:center;margin: 0px 0px">Use case: {{ex[0]}}</a>
+                 <a style="vertical-align:center;margin: 0px 0px">{{ex[0]}}</a>
                 <p></p>
-             <a style="vertical-align:center;margin: 0px 0px">Translation: {{ex[1]}}</a>
+             <a style="vertical-align:center;margin: 0px 0px">{{ex[1]}}</a>
                 </li>
             {% endfor %}
             </ul>
-
-
 
     </table>
 </div>

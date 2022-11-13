@@ -12,12 +12,11 @@
                     <input style="margin: 5px 8px" type="submit" name="starlearning" class="btn btn-success" value="Don't know"/>
                     <input style="margin: 0px 8px" type="submit" name="alreadylearned" class="btn btn-success" value="Know"/>
 
-
                     </form>
-            <p>    <a style="vertical-align:center;margin: -0px 0px">Stage: {{word[0]}}</a></p>
-          <p>  <a style="vertical-align:center;margin: -0px 0px">Word: {{word[3]}}</a></p>
+                <p></p>
+          <p>  <a style="vertical-align:center;margin: -0px 0px"><b>{{word[3]}}</b></a></p>
                 <p>  <img src="/static/img/apple.jpg" width="60" height="70"></p>
-           <p>   <a style="vertical-align:center;margin: -0px 0px">Word translation: {{word[4]}}</a></p>
+           <p>   <a style="vertical-align:center;margin: -0px 0px"><b>{{word[4]}}</b></a></p>
 
             </tr>
             {% for example in word_usage %}

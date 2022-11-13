@@ -17,16 +17,14 @@
                     </form>
                 <p> </p>
             <p>    <a >Stage: {{word[0]}}</a></p>
-          <p>  <a >Word: {{word[3]}}</a></p>
-           <p>   <a>Word translation: {{word[4]}}</a></p>
+          <p>  <a><b>{{word[3]}}</b></a></p>
+           <p>   <a><b>{{word[4]}}</b></a></p>
 
             {% for ex in word_ex %}
-            <p>    <a style="margin: -0px 0px">{{loop.index}}. Use case: {{ex[0]}}</a></p>
-            <p>    <a style="margin: -0px 0px">{{loop.index}}. Translation: {{ex[1]}}</a></p>
+            <p>    <a style="margin: -0px 0px">{{loop.index}}. {{ex[0]}}</a></p>
+            <p>    <a style="margin: -0px 0px">{{ex[1]}}</a></p>
             {% endfor %}
             </ul>
-
-
 
     </table>
 </div>
