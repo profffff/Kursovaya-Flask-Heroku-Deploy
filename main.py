@@ -281,7 +281,7 @@ def lists_from_users():
                     lists_rating.append([round(j[2], 3), j[1]])
                     break
             if not i_in_j:
-                lists_rating.append(["Not yet rated", 'Nobody'])
+                lists_rating.append([0.0, 'Nobody'])
 
         public_lists = list(zip(account, lists_rating, isuser_list))
         if value == '1': #desc sort
@@ -332,8 +332,9 @@ def renamelist(id):
 
 @app.route('/deletelist/<int:id>', methods=['GET', 'POST'])
 def deletelist(id):
-    if prevent_URL_glitch(id):
-        return redirect(url_for('home'))
+    if session['user_login'] not in admins_logins():
+        if prevent_URL_glitch(id):
+            return redirect(url_for('home'))
     if request.method == 'POST':
         if (request.form.get('yes', None)):
             cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
